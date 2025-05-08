@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Optional: Handle method security via FlightPHP instead
+# and let Apache allow everything
+<IfModule mod_access_compat.c>
+    Order Allow,Deny
+    Allow from all
+</IfModule>
+
+<IfModule !mod_access_compat.c>
+    Require all granted
+</IfModule>
