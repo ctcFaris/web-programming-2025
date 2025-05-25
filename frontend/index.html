@@ -60,19 +60,19 @@
                               <li><a href="#courses">Courses</a></li>
                               <li><a href="#pricing">Pricing</a></li>
                               <li><a href="#contact">Contact</a></li>
-                              <li><a href="#admin">Admin</a></li>
+                              <li id="admin-nav-item"><a href="#admin">Admin</a></li>
+
                           </ul>
                       </nav>
                   </div>          
                   <!-- Header-btn -->
-                  <div class="d-flex flex-row">
-                      <div class="header-btns d-none d-lg-block f-right">
-                          <a href="#register" class="border-btn">Register</a>
-                      </div>
-                      <div class="header-btns d-none d-lg-block f-right ml-2">
-                          <a href="#login" class="border-btn">Login</a>
-                      </div>
-                  </div>
+                  <div class="header-btns d-none d-lg-block f-right">
+  <a href="#register" id="btn-register" class="border-btn">Register</a>
+  <a href="#login" id="btn-login" class="border-btn ml-2">Login</a>
+  <a href="#profile" id="btn-profile" class="border-btn ml-2" style="display: none;">My Profile</a>
+  <a href="#" id="btn-logout" class="border-btn ml-2" style="display: none;">Logout</a>
+
+</div>
                  <!-- Mobile Menu -->
                  <div class="col-12">
                   <div class="mobile_menu d-block d-lg-none"></div>
@@ -96,7 +96,10 @@
       <section id="locations" data-load="locations.html"></section>
       <section id="admin" data-load="admin.html"></section>
       <section id="payment" data-load="payment.html"></section>
+      <section id="profile" data-load="profile.html"></section>
+
     </main>
+
 
 
 
@@ -139,6 +142,8 @@
     <script src="./assets/js/jquery.validate.min.js"></script>
     <script src="./assets/js/mail-script.js"></script>
     <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+
+    <script src="./assets/js/auth.js"></script>
 
     <!-- Jquery Plugins, main Jquery -->	
     <script src="./assets/js/plugins.js"></script>

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // ✅ Import Roles class
+
 /**
  * @OA\Get(
  *     path="/subscriptions",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /subscriptions', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Both roles can view
     Flight::json(Flight::subscriptionService()->getAllSubscriptions());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /subscriptions', function() {
  * )
  */
 Flight::route('GET /subscriptions/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Both roles can view
     Flight::json(Flight::subscriptionService()->getSubscriptionById($id));
 });
 
@@ -56,6 +60,7 @@ Flight::route('GET /subscriptions/@id', function($id) {
  * )
  */
 Flight::route('GET /subscriptions/name/@name', function($name) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Both roles can view
     Flight::json(Flight::subscriptionService()->getSubscriptionByName($name));
 });
 
@@ -78,6 +83,7 @@ Flight::route('GET /subscriptions/name/@name', function($name) {
  * )
  */
 Flight::route('POST /subscriptions', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::subscriptionService()->createSubscription($data));
 });
@@ -108,6 +114,7 @@ Flight::route('POST /subscriptions', function() {
  * )
  */
 Flight::route('PUT /subscriptions/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::subscriptionService()->updateSubscription($id, $data));
 });
@@ -131,5 +138,6 @@ Flight::route('PUT /subscriptions/@id', function($id) {
  * )
  */
 Flight::route('DELETE /subscriptions/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     Flight::json(Flight::subscriptionService()->deleteSubscription($id));
 });

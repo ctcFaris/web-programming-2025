@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // Include roles
+
 /**
  * @OA\Get(
  *     path="/contact",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /contact', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     Flight::json(Flight::contactMeService()->getAllMessages());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /contact', function() {
  * )
  */
 Flight::route('GET /contact/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     Flight::json(Flight::contactMeService()->getMessageById($id));
 });
 
@@ -56,6 +60,7 @@ Flight::route('GET /contact/@id', function($id) {
  * )
  */
 Flight::route('GET /contact/user/@user_id', function($user_id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]); // Users and Admins
     Flight::json(Flight::contactMeService()->getMessagesByUserId($user_id));
 });
 
@@ -79,6 +84,7 @@ Flight::route('GET /contact/user/@user_id', function($user_id) {
  * )
  */
 Flight::route('POST /contact', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]); // Users and Admins
     $data = Flight::request()->data->getData();
     Flight::json(Flight::contactMeService()->createMessage($data));
 });
@@ -108,6 +114,7 @@ Flight::route('POST /contact', function() {
  * )
  */
 Flight::route('PUT /contact/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::contactMeService()->updateMessage($id, $data));
 });
@@ -131,6 +138,7 @@ Flight::route('PUT /contact/@id', function($id) {
  * )
  */
 Flight::route('DELETE /contact/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     Flight::json(Flight::contactMeService()->deleteMessage($id));
 });
 
@@ -146,6 +154,7 @@ Flight::route('DELETE /contact/@id', function($id) {
  * )
  */
 Flight::route('GET /contact/ids', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     $messages = Flight::contactMeService()->getAllMessages();
     $ids = array_map(fn($msg) => $msg['contact_id'], $messages);
     Flight::json($ids);

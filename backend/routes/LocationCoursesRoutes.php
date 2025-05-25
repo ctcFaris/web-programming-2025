@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // ✅ Import Roles
+
 /**
  * @OA\Get(
  *     path="/locations/{location_id}/courses",
@@ -19,6 +21,7 @@
  * )
  */
 Flight::route('GET /locations/@location_id/courses', function($location_id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Read access for both roles
     Flight::json(Flight::locationCoursesService()->getCoursesByLocation($location_id));
 });
 
@@ -41,6 +44,7 @@ Flight::route('GET /locations/@location_id/courses', function($location_id) {
  * )
  */
 Flight::route('GET /courses/@course_id/locations', function($course_id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Read access for both roles
     Flight::json(Flight::locationCoursesService()->getLocationsByCourse($course_id));
 });
 
@@ -70,6 +74,7 @@ Flight::route('GET /courses/@course_id/locations', function($course_id) {
  * )
  */
 Flight::route('POST /locations/@location_id/courses/@course_id', function($location_id, $course_id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Only admins can modify associations
     Flight::json(Flight::locationCoursesService()->addCourseToLocation($location_id, $course_id));
 });
 
@@ -99,5 +104,6 @@ Flight::route('POST /locations/@location_id/courses/@course_id', function($locat
  * )
  */
 Flight::route('DELETE /locations/@location_id/courses/@course_id', function($location_id, $course_id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Only admins can modify associations
     Flight::json(Flight::locationCoursesService()->removeCourseFromLocation($location_id, $course_id));
 });

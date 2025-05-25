@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // ✅ Import Roles
+
 /**
  * @OA\Get(
  *     path="/locations",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /locations', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Both can read
     Flight::json(Flight::locationService()->getAllLocations());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /locations', function() {
  * )
  */
 Flight::route('GET /locations/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Both can read
     Flight::json(Flight::locationService()->getLocationById($id));
 });
 
@@ -56,6 +60,7 @@ Flight::route('GET /locations/@id', function($id) {
  * )
  */
 Flight::route('POST /locations', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::locationService()->createLocation($data));
 });
@@ -86,6 +91,7 @@ Flight::route('POST /locations', function() {
  * )
  */
 Flight::route('PUT /locations/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::locationService()->updateLocation($id, $data));
 });
@@ -109,5 +115,6 @@ Flight::route('PUT /locations/@id', function($id) {
  * )
  */
 Flight::route('DELETE /locations/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     Flight::json(Flight::locationService()->deleteLocation($id));
 });
