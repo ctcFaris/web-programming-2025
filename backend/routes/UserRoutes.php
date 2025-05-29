@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // ✅ Required for Roles class
+
 /**
  * @OA\Get(
  *     path="/users",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /users', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     Flight::json(Flight::userService()->getAllUsers());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /users', function() {
  * )
  */
 Flight::route('GET /users/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ Admin + user
     Flight::json(Flight::userService()->getUserById($id));
 });
 
@@ -56,6 +60,7 @@ Flight::route('GET /users/@id', function($id) {
  * )
  */
 Flight::route('POST /users', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::userService()->createUser($data));
 });
@@ -86,6 +91,7 @@ Flight::route('POST /users', function() {
  * )
  */
 Flight::route('PUT /users/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::userService()->updateUser($id, $data));
 });
@@ -113,6 +119,7 @@ Flight::route('PUT /users/@id', function($id) {
  * )
  */
 Flight::route('DELETE /users/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     try {
         $result = Flight::userService()->deleteUser($id);
         if ($result) {

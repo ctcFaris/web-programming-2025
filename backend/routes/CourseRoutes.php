@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // Include roles
+
 /**
  * @OA\Get(
  *     path="/courses",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /courses', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // Users and admins
     Flight::json(Flight::courseService()->getAllCourses());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /courses', function() {
  * )
  */
 Flight::route('GET /courses/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // Users and admins
     Flight::json(Flight::courseService()->getCourseById($id));
 });
 
@@ -57,6 +61,7 @@ Flight::route('GET /courses/@id', function($id) {
  * )
  */
 Flight::route('POST /courses', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::courseService()->createCourse($data));
 });
@@ -87,6 +92,7 @@ Flight::route('POST /courses', function() {
  * )
  */
 Flight::route('PUT /courses/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::courseService()->updateCourse($id, $data));
 });
@@ -110,5 +116,6 @@ Flight::route('PUT /courses/@id', function($id) {
  * )
  */
 Flight::route('DELETE /courses/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // Admin only
     Flight::json(Flight::courseService()->deleteCourse($id));
 });

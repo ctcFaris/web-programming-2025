@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../data/roles.php'; // ✅ Import Roles class
+
 /**
  * @OA\Get(
  *     path="/payments",
@@ -12,6 +14,7 @@
  * )
  */
 Flight::route('GET /payments', function() {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     Flight::json(Flight::paymentService()->getAllPayments());
 });
 
@@ -34,6 +37,7 @@ Flight::route('GET /payments', function() {
  * )
  */
 Flight::route('GET /payments/@id', function($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::ADMIN, Roles::USER]); // ✅ User can see own, Admin sees all
     Flight::json(Flight::paymentService()->getPaymentById($id));
 });
 
@@ -56,6 +60,7 @@ Flight::route('GET /payments/@id', function($id) {
  * )
  */
 Flight::route('POST /payments', function() {
+    Flight::auth_middleware()->authorizeRoles([Roles::USER, Roles::ADMIN]); // ✅ Both can create
     $data = Flight::request()->data->getData();
     Flight::json(Flight::paymentService()->createPayment($data));
 });
@@ -86,6 +91,7 @@ Flight::route('POST /payments', function() {
  * )
  */
 Flight::route('PUT /payments/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     $data = Flight::request()->data->getData();
     Flight::json(Flight::paymentService()->updatePayment($id, $data));
 });
@@ -109,5 +115,6 @@ Flight::route('PUT /payments/@id', function($id) {
  * )
  */
 Flight::route('DELETE /payments/@id', function($id) {
+    Flight::auth_middleware()->authorizeRole(Roles::ADMIN); // ✅ Admin only
     Flight::json(Flight::paymentService()->deletePayment($id));
 });
