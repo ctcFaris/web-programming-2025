@@ -1,253 +1,188 @@
+$(document).ready(function () {
+    var app = $.spapp({
+        defaultView: "#register",
+        templateDir: "./tpl/",
+        pageNotFound: "error_404"
+    });
 
-$(document).ready(function() {
+    app.route({ view: "home", load: "home.html" });
+    app.route({ view: "about", load: "about.html" });
+    app.route({ view: "contact", load: "contact.html" });
+    app.route({ view: "courses", load: "courses.html" });
+    app.route({ view: "pricing", load: "pricing.html" });
+    app.route({ view: "register", load: "register.html" });
+    app.route({ view: "login", load: "login.html" });
 
-  $("main#spapp > section").height($(document).height() - 60);
+    app.run();
 
-  var app = $.spapp({
-    defaultView  : "#home",
-    templateDir  : "./tpl/",
-    pageNotFound : "error_404"
-}); // initialize
+    let registerInterval = setInterval(() => {
+        const btn = document.getElementById("register-button");
+        if (btn) {
+            console.log("✅ Register button found, binding click");
+            bindRegister();
+            clearInterval(registerInterval);
+        }
+    }, 300);
 
-  // define routes
-  app.route({
-    view: 'home', load: 'home.html'
-  });
-  app.route({view: 'about', load: 'about.html' });
-  app.route({view: 'contact', load: 'contact.html' });
-  app.route({view: 'courses', load: 'courses.html' });
-  app.route({view: 'pricing', load: 'pricing.html'});
-  app.route({view: 'register', load: 'register.html'});
-  app.route({view: 'login', load: 'login.html'});
-  app.route({view: '#forgot-password', load: 'forgot-password.html'});
-  app.route({view: '#admin', load: 'admin.html'});
-  app.route({view: '#locations', load: 'locations.html'});
-  app.route({view: '#payment', load: 'payment.html'});
-  app.route({view: '#coursesinfo', load: 'coursesinfo.html'});
+    let loginInterval = setInterval(() => {
+        const btn = document.getElementById("login-button");
+        if (btn) {
+            console.log("✅ Login button found, binding click");
+            bindLogin();
+            clearInterval(loginInterval);
+        }
+    }, 300);
 
+    // Logout click handler
+   $("#btn-logout").on("click", function () {
+    console.log("➡️ Logout clicked");
 
+    // Clear token and role
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("user_role");
 
-  // run app
-  app.run();
+    updateNavigationUI();
 
-  //Javascript code to hide header on login, forgot password and register pages
-  $(window).on("hashchange", function() {
-    if (["#login", "#forgot-password", "#register"].includes(window.location.hash)) {
-        $("header").hide(); // Hide header on login, forgot-password, and register pages
-    } else {
-        $("header").show(); // Show header on all other pages
-    }
+    // Redirect and force SPApp to reload home content
+    window.location.hash = "#home";
+
+    // Wait for hash to update, then force SPApp to reload view manually
+    setTimeout(() => {
+        $("#spapp").load("tpl/home.html", function () {
+            console.log("✅ Forced home reload after logout");
+        });
+    }, 150);
 });
 
 
+    function bindRegister() {
+        document.getElementById("register-button").addEventListener("click", async function () {
+            console.log("➡️ Register button clicked");
 
-    /* 1. Proloder */
-    $(window).on('load', function () {
-      $('#preloader-active').delay(450).fadeOut('slow');
-      $('body').delay(450).css({
-        'overflow': 'visible'
-      });
+            const name = document.getElementById("exampleFirstName").value.trim();
+            const last_name = document.getElementById("exampleLastName").value.trim();
+            const email = document.getElementById("exampleInputEmail").value.trim();
+            const password = document.getElementById("exampleInputPassword").value.trim();
+            const repeatPassword = document.getElementById("exampleRepeatPassword").value.trim();
+
+            if (!name || !last_name || !email || !password || !repeatPassword) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            if (!email.match(/^\S+@\S+\.\S+$/)) {
+                alert("Invalid email format.");
+                return;
+            }
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            if (password !== repeatPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            const user = { name, last_name, email, password };
+
+            try {
+                const res = await fetch("http://localhost/web-programming-2025/web-programming-2025/backend/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(user)
+                });
+
+                if (!res.ok) throw new Error(`Failed: ${res.status}`);
+
+                const result = await res.json();
+                alert("✅ Registration successful!");
+                window.location.hash = "#login";
+            } catch (err) {
+                console.error("❌ Registration error:", err);
+                alert("Failed to register. Please try again.");
+            }
+        });
+    }
+
+    function bindLogin() {
+        document.getElementById("login-button").addEventListener("click", async function () {
+            console.log("➡️ Login button clicked");
+
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+
+            if (!email || !password) {
+                alert("Please enter both email and password.");
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost/web-programming-2025/web-programming-2025/backend/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!res.ok) throw new Error(`Failed: ${res.status}`);
+
+                const result = await res.json();
+                const userData = result.data;
+
+                localStorage.setItem("jwt_token", userData.token);
+                localStorage.setItem("user_role", userData.role);
+
+                alert("✅ Login successful!");
+                updateNavigationUI();
+                window.location.hash = "#home";
+            } catch (err) {
+                console.error("❌ Login error:", err);
+                alert("Login failed. Please check your credentials.");
+            }
+        });
+    }
+
+    function updateNavigationUI() {
+        const token = localStorage.getItem("jwt_token");
+        const role = localStorage.getItem("user_role");
+
+        if (token) {
+            $("#btn-login").hide();
+            $("#btn-register").hide();
+            $("#btn-logout").show();
+            $("#btn-profile").show();
+
+            if (role === "admin") {
+                $("#admin-nav-item").show();
+            } else {
+                $("#admin-nav-item").hide();
+            }
+        } else {
+            $("#btn-login").show();
+            $("#btn-register").show();
+            $("#btn-logout").hide();
+            $("#btn-profile").hide();
+            $("#admin-nav-item").hide();
+        }
+    }
+
+    $(window).on("hashchange", function () {
+        const hash = window.location.hash;
+        const role = localStorage.getItem("user_role");
+
+        if (["#register", "#login", "#forgot-password"].includes(hash)) {
+            $("header").hide();
+        } else {
+            $("header").show();
+        }
+
+        if (hash === "#admin" && role !== "admin") {
+            alert("❌ Access denied. Admins only.");
+            window.location.hash = "#home";
+        }
     });
 
-    /* 2. sticky And Scroll UP */
-        $(window).on('scroll', function () {
-          var scroll = $(window).scrollTop();
-          if (scroll < 400) {
-            $(".header-sticky").removeClass("sticky-bar");
-            $('#back-top').fadeOut(500);
-          } else {
-            $(".header-sticky").addClass("sticky-bar");
-            $('#back-top').fadeIn(500);
-          }
-        });
-
-      // Scroll Up
-        $('#back-top a').on("click", function () {
-          $('body,html').animate({
-            scrollTop: 0
-          }, 800);
-          return false;
-        });
-      
-
-    /* 3. slick Nav */
-    // mobile_menu
-        var menu = $('ul#navigation');
-        if(menu.length){
-          menu.slicknav({
-            prependTo: ".mobile_menu",
-            closedSymbol: '+',
-            openedSymbol:'-'
-          });
-        };
-
-    /* 4. MainSlider-1 */
-        // h1-hero-active
-        function mainSlider() {
-          var BasicSlider = $('.slider-active');
-          BasicSlider.on('init', function (e, slick) {
-            var $firstAnimatingElements = $('.single-slider:first-child').find('[data-animation]');
-            doAnimations($firstAnimatingElements);
-          });
-          BasicSlider.on('beforeChange', function (e, slick, currentSlide, nextSlide) {
-            var $animatingElements = $('.single-slider[data-slick-index="' + nextSlide + '"]').find('[data-animation]');
-            doAnimations($animatingElements);
-          });
-          BasicSlider.slick({
-            autoplay: true,
-            autoplaySpeed: 5000,
-            dots: false,
-            fade: true,
-            arrows: false, 
-            prevArrow: '<button type="button" class="slick-prev"><i class="ti-angle-left"></i></button>',
-            nextArrow: '<button type="button" class="slick-next"><i class="ti-angle-right"></i></button>',
-            responsive: [{
-                breakpoint: 1024,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  infinite: true,
-                }
-              },
-              {
-                breakpoint: 991,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrows: false
-                }
-              },
-              {
-                breakpoint: 767,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrows: false
-                }
-              }
-            ]
-          });
-
-          function doAnimations(elements) {
-            var animationEndEvents = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-            elements.each(function () {
-              var $this = $(this);
-              var $animationDelay = $this.data('delay');
-              var $animationType = 'animated ' + $this.data('animation');
-              $this.css({
-                'animation-delay': $animationDelay,
-                '-webkit-animation-delay': $animationDelay
-              });
-              $this.addClass($animationType).one(animationEndEvents, function () {
-                $this.removeClass($animationType);
-              });
-            });
-          }
-        }
-        mainSlider();
-
-    /* 5. Testimonial Active*/
-
-    /* 4. Testimonial Active*/
-        var testimonial = $('.h1-testimonial-active');
-        if(testimonial.length){
-        testimonial.slick({
-            dots: false,
-            infinite: true,
-            speed: 1000,
-            autoplay:true,
-            loop:true,
-            arrows: true,
-            prevArrow: '<button type="button" class="slick-prev"><i class="ti-arrow-top-left"></i></button>',
-            nextArrow: '<button type="button" class="slick-next"><i class="ti-arrow-top-right"></i></button>',
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            responsive: [
-              {
-                breakpoint: 1024,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  infinite: true,
-                  dots: false,
-                  arrow:false
-                }
-              },
-              {
-                breakpoint: 600,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrows:false
-                }
-              },
-              {
-                breakpoint: 480,
-                settings: {
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrows:false,
-                }
-              }
-            ]
-          });
-        }
-
-    /* 6. Nice Selectorp  */
-      var nice_Select = $('select');
-        if(nice_Select.length){
-          nice_Select.niceSelect();
-        }
-
-    /* 7. data-background */
-        $("[data-background]").each(function () {
-          $(this).css("background-image", "url(" + $(this).attr("data-background") + ")")
-          });
-
-
-    /* 10. WOW active */
-        new WOW().init();
-
-    // 11. ---- Mailchimp js --------//  
-        function mailChimp() {
-          $('#mc_embed_signup').find('form').ajaxChimp();
-        }
-        mailChimp();
-
-
-    // 12 Pop Up Img
-        var popUp = $('.single_gallery_part, .img-pop-up');
-          if(popUp.length){
-            popUp.magnificPopup({
-              type: 'image',
-              gallery:{
-                enabled:true
-              }
-            });
-          }
-    // 12 Pop Up Video
-        var popUp = $('.popup-video');
-        if(popUp.length){
-          popUp.magnificPopup({
-            type: 'iframe'
-          });
-        }
-
-    /* 13. counterUp*/
-        $('.counter').counterUp({
-          delay: 10,
-          time: 3000
-        });
-
-    /* 14. Datepicker */
-      $('#datepicker1').datepicker();
-
-    // 15. Time Picker
-      $('#timepicker').timepicker();
-
-    //16. Overlay
-      $(".snake").snakeify({
-        speed: 200
-      });
-
+    // Run on first load
+    updateNavigationUI();
 });

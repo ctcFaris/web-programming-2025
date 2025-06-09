@@ -43,6 +43,22 @@
                     <div class="card-body">Adding Locations</div>
                     <div class="card-footer d-flex align-items-center justify-content-between">
                         <button class="custom-button m-1">Add Locations</button>
+                        <!-- Add Location Form (initially hidden) -->
+<div id="add-location-form" style="display:none; margin-top: 20px; background: #fff; padding: 20px; border-radius: 8px;">
+    <h4>Add New Location</h4>
+    <input type="text" id="location-name" placeholder="Name" class="form-control m-1" required>
+    <input type="text" id="location-address" placeholder="Address" class="form-control m-1" required>
+    <input type="text" id="location-map" placeholder="Google Maps Link" class="form-control m-1">
+    <input type="text" id="location-image" placeholder="Image Path" class="form-control m-1">
+    <select id="location-parking" class="form-control m-1">
+        <option value="">Parking Available?</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+    <button class="btn btn-success m-1" id="submit-location-btn">Submit Location</button>
+    <button class="btn btn-secondary m-1" id="cancel-location-btn" type="button">Cancel</button>
+</div>
+
                         <button class="custom-button m-1">Delete Locations</button>
                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                     </div>
@@ -62,64 +78,23 @@
     </section>
 <div class="table-container">
     <h2>Users table</h2>
-    <table id="myTable" class="display">
-        <thead>
-            <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 1 Data 1</td>
-                <td>Row 1 Data 2</td>
-            </tr>
-            <tr>
-                <td>Row 2 Data 1</td>
-                <td>Row 2 Data 2</td>
-            </tr>
-        </tbody>
-    </table>
+<table id="myTable" class="display">
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Created At</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- JavaScript will insert rows here -->
+    </tbody>
+</table>
+
+
 
     <h2>Courses table</h2>
     <table id="myTable2" class="display">
@@ -584,4 +559,3 @@
 <!-- Jquery Plugins, main Jquery -->	
 <script src="./assets/js/plugins.js"></script>
 <script src="./assets/js/main.js"></script> 
-
