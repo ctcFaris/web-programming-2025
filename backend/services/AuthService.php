@@ -64,7 +64,7 @@ class AuthService extends BaseService {
         $jwt_payload = [
             'user' => $user,
             'iat' => time(),
-            'exp' => time() + (60 * 60 * 24) // 24 hours
+            'exp' => time() + (60 * 60 * 24 * 30) // 24 hours,now 30 days
         ];
 
         $token = JWT::encode(

@@ -7,7 +7,7 @@ class UserService extends BaseService {
         $dao = new UserDao();
         parent::__construct($dao);
     }
-
+ 
     // Check if email format is valid before creating a user
     public function createUser($data) {
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
